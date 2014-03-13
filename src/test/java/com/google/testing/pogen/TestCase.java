@@ -1,9 +1,7 @@
 package com.google.testing.pogen;
 
-import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-
-import java.io.File;
+import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
@@ -35,7 +33,8 @@ public class TestCase {
 
     System.out.println(html1);
     System.out.println();
-    System.out.println("--------------------------------------------------------------------------------");
+    System.out
+        .println("--------------------------------------------------------------------------------");
     System.out.println();
 
     assertThat(html1, is(not(html2)));
