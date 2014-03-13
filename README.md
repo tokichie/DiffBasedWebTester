@@ -1,4 +1,4 @@
-DiffBasedWebTester
+DiffBasedWebTester [![Build Status](https://secure.travis-ci.org/exKAZUu/DiffBasedWebTester.png?branch=master)](http://travis-ci.org/exKAZUu/DiffBasedWebTester)
 ==================
 
 ## How to Edit
