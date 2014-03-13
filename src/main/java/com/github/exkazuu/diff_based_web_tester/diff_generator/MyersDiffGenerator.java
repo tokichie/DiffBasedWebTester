@@ -14,7 +14,7 @@ import java.util.List;
  * {@see http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.4.6927}.
  * {@see https://code.google.com/p/java-diff-utils/}.
  */
-public class MyersDiffGenerator {
+public class MyersDiffGenerator extends HtmlDiffGenerator {
     public String generateDiffContent(String input1, String input2, String lineSeparator) {
         List<String> originalContent = Arrays.asList(input1.split(lineSeparator));
         List<String> revisedContent = Arrays.asList(input2.split(lineSeparator));
@@ -61,5 +61,10 @@ public class MyersDiffGenerator {
         public String toString() {
             return start + "," + count;
         }
+    }
+
+    @Override
+    public String generateDiffContent(String input1, String input2) {
+      return generateDiffContent(input1, input2, System.lineSeparator());
     }
 }
