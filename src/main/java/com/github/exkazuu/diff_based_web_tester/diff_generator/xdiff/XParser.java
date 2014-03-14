@@ -75,7 +75,8 @@ class XParser extends DefaultHandler implements LexicalHandler {
 		try {
 			_parser = (XMLReader) Class.forName(_PARSER_NAME).newInstance();
 			_parser.setFeature("http://xml.org/sax/features/validation",
-					_setValidation);
+					Boolean.FALSE);
+					//_setValidation);
 			_parser.setFeature("http://xml.org/sax/features/namespaces",
 					_setNameSpaces);
 			_parser.setFeature(
