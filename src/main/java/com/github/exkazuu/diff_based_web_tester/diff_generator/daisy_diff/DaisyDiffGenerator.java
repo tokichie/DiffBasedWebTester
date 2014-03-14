@@ -1,30 +1,32 @@
 package com.github.exkazuu.diff_based_web_tester.diff_generator.daisy_diff;
 
 import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlDiffGenerator;
-
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Locale;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.select.Elements;
+import org.outerj.daisy.diff.DaisyDiff;
+import org.outerj.daisy.diff.XslFilter;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.outerj.daisy.diff.DaisyDiff;
-import org.outerj.daisy.diff.HtmlCleaner;
-import org.outerj.daisy.diff.XslFilter;
-import org.outerj.daisy.diff.html.HTMLDiffer;
-import org.outerj.daisy.diff.html.HtmlSaxDiffOutput;
-import org.outerj.daisy.diff.html.TextNodeComparator;
-import org.outerj.daisy.diff.html.dom.DomTreeBuilder;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.AttributesImpl;
 
 public class DaisyDiffGenerator extends HtmlDiffGenerator {
+	private static final String TMP_OUT_FILE_PATH = "tmp_out.txt";
+	private static final String TAG_ADDED = "diff-tag-added";
+	private static final String TAG_REMOVED = "diff-tag-removed";
+	private static final String TAG_CHANGED = "diff-html-changed";
+
 
     @Override
     public String generateDiffContent(String input1, String input2) {
@@ -35,9 +37,8 @@ public class DaisyDiffGenerator extends HtmlDiffGenerator {
     public String generateDiffContent(String input1, String input2, String lineSeparator) {
             boolean htmlDiff = true;
             boolean htmlOut = false;
-            String outputFile = "daisydiff.htm";
             String[] css = new String[]{};
-
+		File outFile = new File(TMP_OUT_FILE_PATH);
             InputStream oldStream = new ByteArrayInputStream(input1.getBytes());
             InputStream newStream = new ByteArrayInputStream(input2.getBytes());
 
@@ -45,7 +46,7 @@ public class DaisyDiffGenerator extends HtmlDiffGenerator {
                 SAXTransformerFactory tf = (SAXTransformerFactory) TransformerFactory.newInstance();
 
                 TransformerHandler result = tf.newTransformerHandler();
-                result.setResult(new StreamResult(new File(outputFile)));
+                result.setResult(new StreamResult(outFile));
 
 
                 XslFilter filter = new XslFilter();
@@ -56,8 +57,6 @@ public class DaisyDiffGenerator extends HtmlDiffGenerator {
                         new AttributesImpl());
                 postProcess.startElement("", "diff", "diff",
                         new AttributesImpl());
-                System.out.print(".");
-
 
                 InputStreamReader oldReader = null;
                 BufferedReader oldBuffer = null;
@@ -81,8 +80,6 @@ public class DaisyDiffGenerator extends HtmlDiffGenerator {
                     newISReader.close();
                 }
 
-
-                System.out.print(".");
                 postProcess.endElement("", "diff", "diff");
                 postProcess.endElement("", "diffreport", "diffreport");
                 postProcess.endDocument();
@@ -105,11 +102,52 @@ public class DaisyDiffGenerator extends HtmlDiffGenerator {
                 } catch (IOException e) {
                     //ignore this exception
                 }
-            }
-
-
-        return "";
+					}
+		try {
+			String out = extractNecessaryStringFromRawOutput(outFile);
+			outFile.delete();
+			return out;
+		} catch (IOException e) {
+			System.err.println("Error processing output from daisydiff");
+			e.printStackTrace();
+			return "";
+		}
     }
+
+	private String extractNecessaryStringFromRawOutput(File outFile) throws IOException {
+		Document doc = Jsoup.parse(outFile, "UTF-8", "http://example.com/");
+		StringBuilder builder = new StringBuilder();
+		List<Element> focusElements = new ArrayList<>();
+		addAll(doc.getElementsByAttributeValue("class", TAG_ADDED), focusElements);
+		addAll(doc.getElementsByAttributeValue("class", TAG_REMOVED), focusElements);
+		addAll(doc.getElementsByAttributeValue("class", TAG_CHANGED), focusElements);
+		for (Element focusElement: focusElements) {
+			String operationName;
+			if (focusElement.hasClass(TAG_ADDED)) {
+				operationName = "Additional";
+			} else if (focusElement.hasClass(TAG_REMOVED)) {
+				operationName = "Removed";
+			} else {
+				operationName = "Changed";
+			}
+			builder.append(operationName + ":" + childrenToString(focusElement)).append(System.lineSeparator());
+		}
+		return builder.toString();
+	}
+
+	private void addAll(Elements elements, List<Element> target) {
+		for (int i = 0; i < elements.size(); i++) {
+			target.add(elements.get(i));
+		}
+	}
+
+	private String childrenToString(Element element) {
+		StringBuilder builder = new StringBuilder();
+		for (Node child: element.childNodes()) {
+			builder.append(child);
+		}
+		return builder.toString();
+	}
 
     private static void doCSS(String[] css, ContentHandler handler) throws SAXException {
         handler.startElement("", "css", "css",

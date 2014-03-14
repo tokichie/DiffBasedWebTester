@@ -1,7 +1,6 @@
 package com.github.exkazuu.diff_based_web_tester.diff_generator;
 
 import com.github.exkazuu.diff_based_web_tester.diff_generator.daisy_diff.DaisyDiffGenerator;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
 import com.google.common.io.Resources;
 import org.junit.Test;
 
@@ -22,7 +21,7 @@ public class DaisyDiffTest {
 		String diff = generator.generateDiffContent(input1, input2,
 				System.lineSeparator());
 		String expected = Resources.toString(
-				Resources.getResource("diff_generator/xdiff.diff"),
+				Resources.getResource("diff_generator/daisydiff.diff"),
 				StandardCharsets.UTF_8);
 		assertEquals(expected, diff);
 	}

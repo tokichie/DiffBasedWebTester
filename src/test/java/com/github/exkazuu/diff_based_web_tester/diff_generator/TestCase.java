@@ -5,14 +5,14 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import com.github.exkazuu.diff_based_web_tester.diff_generator.daisy_diff.DaisyDiffGenerator;
+import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
+import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.firefox.FirefoxDriver;
-
-import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
-import com.google.common.collect.Lists;
 
 public class TestCase {
 	private FirefoxDriver driver;
@@ -27,6 +27,7 @@ public class TestCase {
 		generatos.add(new ThreeDMDiffGenerator());
 		generatos.add(new HtmlTreeDiff());
 		generatos.add(new XMLUnitDiffGenerator());
+		generatos.add(new DaisyDiffGenerator());
 	}
 
 	@After
