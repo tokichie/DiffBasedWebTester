@@ -63,10 +63,6 @@
 
   <repositories>
     <repository>
-      <id>xtend-repos</id>
-      <url>http://build.eclipse.org/common/xtend/maven/</url>
-    </repository>
-    <repository>
       <id>public</id>
       <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
       <releases>
@@ -88,13 +84,6 @@
       </snapshots>
     </repository>
   </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>xtend-repos</id>
-      <url>http://build.eclipse.org/common/xtend/maven/</url>
-    </pluginRepository>
-  </pluginRepositories>
 
   <dependencies>
     <dependency>

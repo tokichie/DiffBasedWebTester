@@ -16,7 +16,7 @@ public class DebugUtil {
 			FileOutputStream stream = new FileOutputStream(new File("log"
 					+ File.separatorChar + sdf.format(cal.getTime())
 					+ suffixFileName));
-			OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
+			OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-16");
 			writer.write(content);
 			writer.close();
 			stream.close();

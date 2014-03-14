@@ -1,23 +1,18 @@
 package com.github.exkazuu.diff_based_web_tester.diff_generator;
 
-import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlDiffGenerator;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlFormatter;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.MyersDiffGenerator;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.ThreeDMDiffGenerator;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
-import com.google.common.collect.Lists;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-import com.github.exkazuu.diff_based_web_tester.diff_generator.DebugUtil;
-import java.util.List;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
+import com.google.common.collect.Lists;
 
 public class TestCase {
 	private FirefoxDriver driver;
@@ -30,6 +25,7 @@ public class TestCase {
 		generatos.add(new MyersDiffGenerator());
 		generatos.add(new XDiffGenerator());
 		generatos.add(new ThreeDMDiffGenerator());
+		generatos.add(new HtmlTreeDiff());
 	}
 
 	@After
@@ -39,24 +35,28 @@ public class TestCase {
 
 	@Test
 	public void testGoogle() throws InterruptedException {
+		System.out.println("------------- Google -------------");
 		compareDiffAlgorithmsByUrls("https://www.google.co.jp/?#q=abc",
 				"https://www.google.co.jp/?#q=def");
 	}
 
 	@Test
-	public void testGithub() throws InterruptedException {
+	public void testGitHub() throws InterruptedException {
+		System.out.println("------------- GitHub -------------");
 		compareDiffAlgorithmsByUrls("https://github.com/erikhuda/thor",
 				"https://github.com/junit-team/junit");
 	}
 
 	@Test
 	public void testTwitter() throws InterruptedException {
+		System.out.println("------------- Twitter -------------");
 		compareDiffAlgorithmsByUrls("https://twitter.com/john",
 				"https://twitter.com/bob");
 	}
 
 	@Test
 	public void testTodoMvc() throws InterruptedException {
+		System.out.println("------------- TodoMVC -------------");
 		String html1 = retrieveHtml("http://todomvc.com/architecture-examples/backbone/");
 		driver.findElement(By.id("new-todo")).sendKeys("test\n");
 		sleep();
@@ -75,15 +75,17 @@ public class TestCase {
 	private void compareDiffAlgorithmsByHtmls(String html1, String html2) {
 		DebugUtil.writeLogFile("_raw1.html", html1);
 		DebugUtil.writeLogFile("_raw2.html", html2);
-		
+
 		assertThat(html1, is(not(html2)));
-		
+
 		for (HtmlDiffGenerator g : generatos) {
+			long time1 = System.currentTimeMillis();
 			String diff = g.generateDiffContent(html1, html2);
+			long time2 = System.currentTimeMillis();
 			DebugUtil.writeLogFile("_" + g.getClass().getSimpleName() + ".txt",
 					diff);
 			System.out.println(g.getClass().getSimpleName() + ": "
-					+ diff.length());
+					+ diff.length() + " (" + (time2 - time1) + ")");
 		}
 	}
 
