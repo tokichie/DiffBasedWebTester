@@ -26,6 +26,7 @@ public class TestCase {
 		generatos.add(new XDiffGenerator());
 		generatos.add(new ThreeDMDiffGenerator());
 		generatos.add(new HtmlTreeDiff());
+		generatos.add(new XMLUnitDiffGenerator());
 	}
 
 	@After
