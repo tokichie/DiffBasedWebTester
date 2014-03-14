@@ -1,9 +1,5 @@
 package com.github.exkazuu.diff_based_web_tester.diff_generator;
 
-import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlDiffGenerator;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlFormatter;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.MyersDiffGenerator;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.ThreeDMDiffGenerator;
 import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
 import com.google.common.collect.Lists;
 import org.junit.After;
@@ -12,7 +8,6 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-import com.github.exkazuu.diff_based_web_tester.diff_generator.DebugUtil;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -30,6 +25,7 @@ public class TestCase {
 		generatos.add(new MyersDiffGenerator());
 		generatos.add(new XDiffGenerator());
 		generatos.add(new ThreeDMDiffGenerator());
+		generatos.add(new XMLUnitDiffGenerator());
 	}
 
 	@After
