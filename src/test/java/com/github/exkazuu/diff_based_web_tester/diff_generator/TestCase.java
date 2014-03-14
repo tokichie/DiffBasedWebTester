@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
+import com.github.exkazuu.diff_based_web_tester.diff_generator.daisy_diff.DaisyDiffGeneratorWithTagMode;
 import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
 import com.google.common.collect.Lists;
 
@@ -25,8 +26,9 @@ public class TestCase {
 		generatos.add(new MyersDiffGenerator());
 		generatos.add(new XDiffGenerator());
 		generatos.add(new ThreeDMDiffGenerator());
-		generatos.add(new HtmlTreeDiff());
+		generatos.add(new DaisyDiffGeneratorWithTagMode());
 		generatos.add(new XMLUnitDiffGenerator());
+		generatos.add(new HtmlTreeDiff());
 	}
 
 	@After
