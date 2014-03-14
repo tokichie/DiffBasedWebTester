@@ -9,19 +9,20 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.Assert.assertEquals;
 
 public class XDiffTest {
-    @Test
-    public void testUnifiedDiff() throws Exception {
-        XDiffGenerator generator = new XDiffGenerator();
-        String input1 = Resources.toString(
-                Resources.getResource("diff_generator/original.html"),
-                StandardCharsets.UTF_8);
-        String input2 = Resources.toString(
-                Resources.getResource("diff_generator/modified.html"),
-                StandardCharsets.UTF_8);
-        String diff = generator.generateDiffContent(input1, input2, System.lineSeparator());
-        String expected = Resources.toString(
-                Resources.getResource("diff_generator/xdiff.diff"),
-                StandardCharsets.UTF_8);
-        assertEquals(expected, diff);
-    }
+	@Test
+	public void testUnifiedDiff() throws Exception {
+		XDiffGenerator generator = new XDiffGenerator();
+		String input1 = Resources.toString(
+				Resources.getResource("diff_generator/original.html"),
+				StandardCharsets.UTF_8);
+		String input2 = Resources.toString(
+				Resources.getResource("diff_generator/modified.html"),
+				StandardCharsets.UTF_8);
+		String diff = generator.generateDiffContent(input1, input2,
+				System.lineSeparator());
+		String expected = Resources.toString(
+				Resources.getResource("diff_generator/xdiff.diff"),
+				StandardCharsets.UTF_8);
+		assertEquals(expected, diff);
+	}
 }

@@ -13,3 +13,6 @@ target/
 # Xtend
 xtend-gen
 generated-sources
+
+# Project Specific
+log/
