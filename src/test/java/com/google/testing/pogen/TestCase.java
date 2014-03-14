@@ -1,10 +1,11 @@
 package com.google.testing.pogen;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import java.util.List;
-
+import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlDiffGenerator;
+import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlFormatter;
+import com.github.exkazuu.diff_based_web_tester.diff_generator.MyersDiffGenerator;
+import com.github.exkazuu.diff_based_web_tester.diff_generator.ThreeDMDiffGenerator;
+import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
+import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,11 +13,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.github.exkazuu.diff_based_web_tester.diff_generator.DebugUtil;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlDiffGenerator;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlFormatter;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.MyersDiffGenerator;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
-import com.google.common.collect.Lists;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 public class TestCase {
 	private FirefoxDriver driver;
@@ -28,6 +29,7 @@ public class TestCase {
 		generatos = Lists.newArrayList();
 		generatos.add(new MyersDiffGenerator());
 		generatos.add(new XDiffGenerator());
+		generatos.add(new ThreeDMDiffGenerator());
 	}
 
 	@After
