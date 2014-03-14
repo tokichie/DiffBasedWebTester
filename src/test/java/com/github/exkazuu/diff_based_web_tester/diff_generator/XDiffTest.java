@@ -23,6 +23,10 @@ public class XDiffTest {
 		String expected = Resources.toString(
 				Resources.getResource("diff_generator/xdiff.diff"),
 				StandardCharsets.UTF_8);
-		assertEquals(expected, diff);
+		equalsIgnoreSpaceAndLinebreaks(expected, diff);
 	}
+
+    private void equalsIgnoreSpaceAndLinebreaks(String expected, String diff) {
+        assertEquals(expected.replaceAll("[\\s|\\n|\\r]", ""), diff.replaceAll("[\\s|\\n|\\r]", ""));
+    }
 }
