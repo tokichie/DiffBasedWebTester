@@ -1,4 +1,4 @@
-package com.google.testing.pogen;
+package com.github.exkazuu.diff_based_web_tester.diff_generator;
 
 import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlDiffGenerator;
 import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlFormatter;
