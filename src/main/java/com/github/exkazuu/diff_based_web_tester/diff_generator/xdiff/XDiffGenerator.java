@@ -33,9 +33,9 @@ public class XDiffGenerator extends HtmlDiffGenerator {
 			s.search(document.getDocumentElement());
 			return s.result();
 		} catch (SAXException e) {
-
+			e.printStackTrace();
 		} catch (IOException e) {
-
+			e.printStackTrace();
 		}
 		return null;
 	}

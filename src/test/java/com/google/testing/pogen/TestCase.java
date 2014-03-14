@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlDiffGenerator;
@@ -35,20 +36,40 @@ public class TestCase {
 
 	@Test
 	public void testGoogle() throws InterruptedException {
-		compareDiffAlgorithms("https://www.google.co.jp/?#q=abc",
+		compareDiffAlgorithmsByUrls("https://www.google.co.jp/?#q=abc",
 				"https://www.google.co.jp/?#q=def");
 	}
 
 	@Test
 	public void testGithub() throws InterruptedException {
-		compareDiffAlgorithms("https://github.com/erikhuda/thor",
+		compareDiffAlgorithmsByUrls("https://github.com/erikhuda/thor",
 				"https://github.com/junit-team/junit");
 	}
 
-	private void compareDiffAlgorithms(String url1, String url2) {
+	@Test
+	public void testTwitter() throws InterruptedException {
+		compareDiffAlgorithmsByUrls("https://twitter.com/john",
+				"https://twitter.com/bob");
+	}
+
+	@Test
+	public void testTodoMvc() throws InterruptedException {
+		String html1 = retrieveHtml("http://todomvc.com/architecture-examples/backbone/");
+		driver.findElement(By.id("new-todo")).sendKeys("test\n");
+		sleep();
+		String html2 = retrieveHtml();
+
+		compareDiffAlgorithmsByHtmls(html1, html2);
+	}
+
+	private void compareDiffAlgorithmsByUrls(String url1, String url2) {
 		String html1 = retrieveHtml(url1);
 		String html2 = retrieveHtml(url2);
 
+		compareDiffAlgorithmsByHtmls(html1, html2);
+	}
+
+	private void compareDiffAlgorithmsByHtmls(String html1, String html2) {
 		assertThat(html1, is(not(html2)));
 
 		for (HtmlDiffGenerator g : generatos) {
@@ -60,10 +81,19 @@ public class TestCase {
 
 	private String retrieveHtml(String url) {
 		driver.get(url);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-		}
+		sleep();
+		return retrieveHtml();
+	}
+
+	private String retrieveHtml() {
 		return HtmlFormatter.format(driver.getPageSource());
+	}
+
+	private void sleep() {
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }

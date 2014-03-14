@@ -93,8 +93,8 @@ class XParser extends DefaultHandler implements LexicalHandler {
 			_parser.setProperty(
 					"http://xml.org/sax/properties/lexical-handler", this);
 		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			System.exit(1);
+			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 
 		_idStack = new int[_STACK_SIZE];
@@ -120,8 +120,8 @@ class XParser extends DefaultHandler implements LexicalHandler {
 		try {
 			_parser.parse(new InputSource(reader));
 		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			System.exit(1);
+			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 
 		return _xtree;

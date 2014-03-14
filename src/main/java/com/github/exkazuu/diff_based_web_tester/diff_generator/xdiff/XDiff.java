@@ -92,6 +92,8 @@ class XDiff {
 			System.out.println("Parsing 1" + ": " + (t1 - t0) + " ms");
 			System.out.println("Parsing 2" + ": " + (t2 - t1) + " ms");
 		} else {
+			System.out.println("Start extracting difference!");
+			
 			_xlut = new XLut();
 			_matchp = new int[2];
 

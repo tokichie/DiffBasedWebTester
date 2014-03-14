@@ -11,6 +11,7 @@ public class DebugUtil {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		try {
+			new File("log").mkdir();
 			FileWriter writer = new FileWriter(new File("log"
 					+ File.separatorChar + sdf.format(cal.getTime())
 					+ suffixFileName));

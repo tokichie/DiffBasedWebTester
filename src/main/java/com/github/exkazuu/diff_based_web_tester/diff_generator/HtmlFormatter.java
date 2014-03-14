@@ -47,7 +47,9 @@ public class HtmlFormatter {
 			DebugUtil.writeLogFile("_after.html", str);
 			return str;
 		} catch (SAXException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
