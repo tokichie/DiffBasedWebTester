@@ -66,6 +66,27 @@
       <id>xtend-repos</id>
       <url>http://build.eclipse.org/common/xtend/maven/</url>
     </repository>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
   </repositories>
 
   <pluginRepositories>
@@ -90,6 +111,11 @@
       <groupId>net.sourceforge.nekohtml</groupId>
       <artifactId>nekohtml</artifactId>
       <version>1.9.20</version>
+    </dependency>
+    <dependency>
+      <groupId>org.outerj.daisy</groupId>
+      <artifactId>daisydiff</artifactId>
+      <version>1.2-NX2</version>
     </dependency>
     <!-- for test -->
     <dependency>
