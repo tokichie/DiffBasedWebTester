@@ -38,11 +38,12 @@ public class HtmlFormatter {
 			config.setParameter("element-content-whitespace", Boolean.FALSE);
 
 			LSOutput lsOutput = factory.createLSOutput();
-			lsOutput.setEncoding("UTF-8");
+			lsOutput.setEncoding("UTF-16");
 			StringWriter stringWriter = new StringWriter();
 			lsOutput.setCharacterStream(stringWriter);
 			serializer.write(document, lsOutput);
 			String str = stringWriter.toString().replaceAll("\\s*<", "\n<")
+					.replace("<?xml version=\"1.0\"", "<?xml version=\"1.1\"")
 					.trim();
 			DebugUtil.writeLogFile("_after.html", str);
 			return str;

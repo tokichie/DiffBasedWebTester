@@ -1,21 +1,23 @@
 package com.google.testing.pogen;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import java.util.List;
-
+import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlDiffGenerator;
+import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlFormatter;
+import com.github.exkazuu.diff_based_web_tester.diff_generator.MyersDiffGenerator;
+import com.github.exkazuu.diff_based_web_tester.diff_generator.ThreeDMDiffGenerator;
+import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
+import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlDiffGenerator;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlFormatter;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.MyersDiffGenerator;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
-import com.google.common.collect.Lists;
+import com.github.exkazuu.diff_based_web_tester.diff_generator.DebugUtil;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 public class TestCase {
 	private FirefoxDriver driver;
@@ -27,6 +29,7 @@ public class TestCase {
 		generatos = Lists.newArrayList();
 		generatos.add(new MyersDiffGenerator());
 		generatos.add(new XDiffGenerator());
+		generatos.add(new ThreeDMDiffGenerator());
 	}
 
 	@After
@@ -70,10 +73,15 @@ public class TestCase {
 	}
 
 	private void compareDiffAlgorithmsByHtmls(String html1, String html2) {
+		DebugUtil.writeLogFile("_raw1.html", html1);
+		DebugUtil.writeLogFile("_raw2.html", html2);
+		
 		assertThat(html1, is(not(html2)));
-
+		
 		for (HtmlDiffGenerator g : generatos) {
 			String diff = g.generateDiffContent(html1, html2);
+			DebugUtil.writeLogFile("_" + g.getClass().getSimpleName() + ".txt",
+					diff);
 			System.out.println(g.getClass().getSimpleName() + ": "
 					+ diff.length());
 		}

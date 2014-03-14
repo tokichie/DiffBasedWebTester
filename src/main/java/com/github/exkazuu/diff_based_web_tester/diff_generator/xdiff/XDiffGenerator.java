@@ -1,22 +1,17 @@
 package com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff;
 
+import com.github.exkazuu.diff_based_web_tester.diff_generator.DebugUtil;
+import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlDiffGenerator;
+import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlFormatter;
+import org.cyberneko.html.parsers.DOMParser;
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Stack;
-
-import org.cyberneko.html.parsers.DOMParser;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.ProcessingInstruction;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import com.github.exkazuu.diff_based_web_tester.diff_generator.DebugUtil;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlDiffGenerator;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlFormatter;
 
 public class XDiffGenerator extends HtmlDiffGenerator {
 
@@ -29,9 +24,9 @@ public class XDiffGenerator extends HtmlDiffGenerator {
 			DebugUtil.writeLogFile("_xdiff.xml", diff);
 			parser.parse(new InputSource(new StringReader(diff)));
 			Document document = parser.getDocument();
-			DepthFirstSearcher s = new DepthFirstSearcher();
-			s.search(document.getDocumentElement());
-			return s.result();
+			InstructionNodeExtractor extractor= new InstructionNodeExtractor();
+			extractor.search(document.getDocumentElement());
+			return extractor.result();
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -48,28 +43,27 @@ public class XDiffGenerator extends HtmlDiffGenerator {
 		return writer.toString();
 	}
 
-	private class DepthFirstSearcher {
+	private class InstructionNodeExtractor {
 		private Stack<Node> stack = new Stack<>();
 		private StringBuilder builder = new StringBuilder();
 
 		private void search(Node node) {
-			if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE) {
-				ProcessingInstruction instruction = (ProcessingInstruction) node;
-				String line = instructionToString(instruction);
-				if (line != null) {
-					builder.append(line).append(System.lineSeparator());
+			stack.push(node);
+			while (!stack.isEmpty()) {
+				node = stack.pop();
+				if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE) {
+					ProcessingInstruction instruction = (ProcessingInstruction) node;
+					String line = instructionToString(instruction);
+					if (line != null) {
+						builder.append(line).append(System.lineSeparator());
+					}
+				}
+
+				NodeList children = node.getChildNodes();
+				for (int i = children.getLength() - 1; i >= 0; i--) {
+					stack.push(children.item(i));
 				}
 			}
-
-			NodeList children = node.getChildNodes();
-			for (int i = children.getLength() - 1; i >= 0; i--) {
-				stack.push(children.item(i));
-			}
-			if (stack.isEmpty()) {
-				return;
-			}
-			Node next = stack.pop();
-			search(next);
 		}
 
 		private String instructionToString(ProcessingInstruction instruction) {
