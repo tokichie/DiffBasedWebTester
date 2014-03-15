@@ -3,110 +3,115 @@ package com.github.exkazuu.diff_based_web_tester.diff_generator;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 
+import com.github.exkazuu.diff_based_web_tester.diff_generator.daisy_diff.DaisyDiffGenerator;
 import com.github.exkazuu.diff_based_web_tester.diff_generator.daisy_diff.DaisyDiffGeneratorWithTagMode;
 import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
-import com.google.common.collect.Lists;
 
+@RunWith(Parameterized.class)
 public class TestCase {
-	private FirefoxDriver driver;
-	private List<HtmlDiffGenerator> generatos;
+  @Parameter
+  public HtmlDiffGenerator generator;
 
-	@Before
-	public void before() {
-		driver = new FirefoxDriver();
-		generatos = Lists.newArrayList();
-		generatos.add(new MyersDiffGenerator());
-		generatos.add(new XDiffGenerator());
-		generatos.add(new ThreeDMDiffGenerator());
-		generatos.add(new DaisyDiffGeneratorWithTagMode());
-		generatos.add(new XMLUnitDiffGenerator());
-		generatos.add(new HtmlTreeDiff());
-	}
+  private int index;
 
-	@After
-	public void after() {
-		driver.quit();
-	}
+  @Parameters
+  public static Collection<HtmlDiffGenerator[]> data() {
+    return Arrays.asList(new HtmlDiffGenerator[][] { {new MyersDiffGenerator()},
+        {new GoogleDiffGenerator()}, {new XDiffGenerator()}, {new ThreeDMDiffGenerator()},
+        {new DaisyDiffGenerator()}, {new DaisyDiffGeneratorWithTagMode()},
+        {new XMLUnitDiffGenerator()}});
+  }
 
-	@Test
-	public void testGoogle() throws InterruptedException {
-		System.out.println("------------- Google -------------");
-		compareDiffAlgorithmsByUrls("https://www.google.co.jp/?#q=abc",
-				"https://www.google.co.jp/?#q=def");
-	}
+  private void setPrefixFileName(String prefixFileName) {
+    index = 0;
+    LogFiles.setPrefixFileName(prefixFileName);
+  }
 
-	@Test
-	public void testGitHub() throws InterruptedException {
-		System.out.println("------------- GitHub -------------");
-		compareDiffAlgorithmsByUrls("https://github.com/erikhuda/thor",
-				"https://github.com/junit-team/junit");
-	}
+  private String readHtml() {
+    return LogFiles.readLogFile("raw" + (++index) + ".html");
+  }
 
-	@Test
-	public void testTwitter() throws InterruptedException {
-		System.out.println("------------- Twitter -------------");
-		compareDiffAlgorithmsByUrls("https://twitter.com/john",
-				"https://twitter.com/bob");
-	}
+  @Test
+  public void testGoogle() throws InterruptedException {
+    System.out.println("------------- Google -------------");
+    setPrefixFileName("Google");
+    compareDiffAlgorithmsUsing2Htmls();
+  }
 
-	@Test
-	public void testTodoMvc() throws InterruptedException {
-		System.out.println("------------- TodoMVC -------------");
-		String html1 = retrieveHtml("http://todomvc.com/architecture-examples/backbone/");
-		driver.findElement(By.id("new-todo")).sendKeys("test\n");
-		sleep();
-		String html2 = retrieveHtml();
+  @Test
+  public void testGitHub() throws InterruptedException {
+    System.out.println("------------- GitHub -------------");
+    setPrefixFileName("GitHub");
+    compareDiffAlgorithmsUsing2Htmls();
+  }
 
-		compareDiffAlgorithmsByHtmls(html1, html2);
-	}
+  @Test
+  public void testTwitter() throws InterruptedException {
+    System.out.println("------------- Twitter -------------");
+    setPrefixFileName("Twitter");
+    compareDiffAlgorithmsUsing2Htmls();
+  }
 
-	private void compareDiffAlgorithmsByUrls(String url1, String url2) {
-		String html1 = retrieveHtml(url1);
-		String html2 = retrieveHtml(url2);
+  @Test
+  public void testTodoMvc() throws InterruptedException {
+    System.out.println("------------- TodoMVC -------------");
+    setPrefixFileName("TodoMVC");
+    compareDiffAlgorithmsUsing4Htmls(false);
+  }
 
-		compareDiffAlgorithmsByHtmls(html1, html2);
-	}
+  @Test
+  public void testTodoMvc2() throws InterruptedException {
+    System.out.println("------------- TodoMVC2 -------------");
+    setPrefixFileName("TodoMVC2");
+    compareDiffAlgorithmsUsing4Htmls(true);
+  }
 
-	private void compareDiffAlgorithmsByHtmls(String html1, String html2) {
-		DebugUtil.writeLogFile("_raw1.html", html1);
-		DebugUtil.writeLogFile("_raw2.html", html2);
+  private void compareDiffAlgorithmsUsing2Htmls() {
+    String html1 = readHtml();
+    String html2 = readHtml();
 
-		assertThat(html1, is(not(html2)));
+    assertThat(html1, is(not(html2)));
 
-		for (HtmlDiffGenerator g : generatos) {
-			long time1 = System.currentTimeMillis();
-			String diff = g.generateDiffContent(html1, html2);
-			long time2 = System.currentTimeMillis();
-			DebugUtil.writeLogFile("_" + g.getClass().getSimpleName() + ".txt",
-					diff);
-			System.out.println(g.getClass().getSimpleName() + ": "
-					+ diff.length() + " (" + (time2 - time1) + ")");
-		}
-	}
+    long time1 = System.currentTimeMillis();
+    String diff = generator.generateDiffContent(html1, html2);
+    long time2 = System.currentTimeMillis();
+    String simpleName = generator.getClass().getSimpleName();
+    LogFiles.writeLogFile(simpleName + ".txt", diff);
+    System.out.println(simpleName + ": " + diff.length() + " (" + (time2 - time1) + ")");
+  }
 
-	private String retrieveHtml(String url) {
-		driver.get(url);
-		sleep();
-		return retrieveHtml();
-	}
+  private void compareDiffAlgorithmsUsing4Htmls(boolean isSame) {
+    String html1 = readHtml();
+    String html2 = readHtml();
+    String html3 = readHtml();
+    String html4 = readHtml();
 
-	private String retrieveHtml() {
-		return HtmlFormatter.format(driver.getPageSource());
-	}
+    assertThat(html1, is(not(html2)));
+    assertThat(html3, is(not(html4)));
+    assertThat(html1, is(not(html3)));
+    assertThat(html2, is(not(html4)));
 
-	private void sleep() {
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+    long time1 = System.currentTimeMillis();
+    String diff1 = generator.generateDiffContent(html1, html2);
+    long time2 = System.currentTimeMillis();
+    String diff2 = generator.generateDiffContent(html3, html4);
+    String simpleName = generator.getClass().getSimpleName();
+    LogFiles.writeLogFile(simpleName + "1.txt", diff1);
+    LogFiles.writeLogFile(simpleName + "2.txt", diff2);
+    if (isSame) {
+      assertEquals(diff1, diff2);
+    } else {
+      assertNotEquals(diff1, diff2);
+    }
+    System.out.println(simpleName + ": " + diff1.length() + " (" + (time2 - time1) + ")");
+  }
 }

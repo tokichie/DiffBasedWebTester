@@ -15,43 +15,43 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class HtmlFormatter {
-	public static String format(String content) {
-		{
-			String str = content.replaceAll("\\s*<", "\n<")
-					.replaceAll(">\\s*", ">\n")
-					.replaceAll("\\s*\\n[\\n\\s]*", "\n").trim();
-			DebugUtil.writeLogFile("_before.html", str);
-		}
+  public static String lineFormat(String content) {
+    String ret =
+        content.replaceAll("\\s*<", "\n<").replaceAll(">\\s*", ">\n")
+            .replaceAll("\\s*\\n[\\n\\s]*", "\n").trim();
+    LogFiles.writeLogFile("lineFormat.html", ret);
+    return ret;
+  }
 
-		DOMParser parser = new DOMParser();
-		try {
-			parser.parse(new InputSource(new ByteArrayInputStream(content
-					.getBytes())));
-			Document document = parser.getDocument();
+  public static String format(String content) {
+    DOMParser parser = new DOMParser();
+    try {
+      parser.parse(new InputSource(new ByteArrayInputStream(content.getBytes())));
+      Document document = parser.getDocument();
 
-			DOMImplementation domImpl = document.getImplementation();
-			DOMImplementationLS factory = (DOMImplementationLS) domImpl;
+      DOMImplementation domImpl = document.getImplementation();
+      DOMImplementationLS factory = (DOMImplementationLS) domImpl;
 
-			LSSerializer serializer = factory.createLSSerializer();
-			DOMConfiguration config = serializer.getDomConfig();
-			config.setParameter("format-pretty-print", Boolean.TRUE);
-			config.setParameter("element-content-whitespace", Boolean.FALSE);
+      LSSerializer serializer = factory.createLSSerializer();
+      DOMConfiguration config = serializer.getDomConfig();
+      config.setParameter("format-pretty-print", Boolean.TRUE);
+      config.setParameter("element-content-whitespace", Boolean.FALSE);
 
-			LSOutput lsOutput = factory.createLSOutput();
-			lsOutput.setEncoding("UTF-16");
-			StringWriter stringWriter = new StringWriter();
-			lsOutput.setCharacterStream(stringWriter);
-			serializer.write(document, lsOutput);
-			String str = stringWriter.toString().replaceAll("\\s*<", "\n<")
-					.replace("<?xml version=\"1.0\"", "<?xml version=\"1.1\"")
-					.trim();
-			DebugUtil.writeLogFile("_after.html", str);
-			return str;
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+      LSOutput lsOutput = factory.createLSOutput();
+      lsOutput.setEncoding("UTF-16");
+      StringWriter stringWriter = new StringWriter();
+      lsOutput.setCharacterStream(stringWriter);
+      serializer.write(document, lsOutput);
+      String str =
+          stringWriter.toString().replaceAll("\\s*<", "\n<")
+              .replace("<?xml version=\"1.0\"", "<?xml version=\"1.1\"").trim();
+      LogFiles.writeLogFile("format.html", str);
+      return str;
+    } catch (SAXException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return content;
+  }
 }

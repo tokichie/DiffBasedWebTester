@@ -18,54 +18,49 @@ import org.xml.sax.helpers.AttributesImpl;
 import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlDiffGenerator;
 
 public class DaisyDiffGeneratorWithTagMode extends HtmlDiffGenerator {
-	@Override
-	public String generateDiffContent(String input1, String input2,
-			String lineSeparator) {
-		boolean htmlOut = false;
-		StringWriter writer = new StringWriter();
+  @Override
+  public String generateDiffContent(String input1, String input2, String lineSeparator) {
+    boolean htmlOut = false;
+    StringWriter writer = new StringWriter();
 
-		try {
-			SAXTransformerFactory tf = (SAXTransformerFactory) TransformerFactory
-					.newInstance();
+    try {
+      SAXTransformerFactory tf = (SAXTransformerFactory) TransformerFactory.newInstance();
 
-			TransformerHandler result = tf.newTransformerHandler();
-			result.setResult(new StreamResult(writer));
+      TransformerHandler result = tf.newTransformerHandler();
+      result.setResult(new StreamResult(writer));
 
-			XslFilter filter = new XslFilter();
+      XslFilter filter = new XslFilter();
 
-			ContentHandler postProcess = htmlOut ? filter.xsl(result,
-					"org/outerj/daisy/diff/tagheader.xsl") : result;
-			postProcess.startDocument();
-			postProcess.startElement("", "diffreport", "diffreport",
-					new AttributesImpl());
-			postProcess.startElement("", "diff", "diff", new AttributesImpl());
-			System.out.print(".");
+      ContentHandler postProcess =
+          htmlOut ? filter.xsl(result, "org/outerj/daisy/diff/tagheader.xsl") : result;
+      postProcess.startDocument();
+      postProcess.startElement("", "diffreport", "diffreport", new AttributesImpl());
+      postProcess.startElement("", "diff", "diff", new AttributesImpl());
+      System.out.print(".");
 
-			try (BufferedReader oldBuffer = new BufferedReader(
-					new StringReader(input1));
-					BufferedReader newBuffer = new BufferedReader(
-							new StringReader(input2));) {
+      try (BufferedReader oldBuffer = new BufferedReader(new StringReader(input1));
+          BufferedReader newBuffer = new BufferedReader(new StringReader(input2));) {
 
-				DaisyDiff.diffTag(oldBuffer, newBuffer, postProcess);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+        DaisyDiff.diffTag(oldBuffer, newBuffer, postProcess);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
 
-			System.out.print(".");
-			postProcess.endElement("", "diff", "diff");
-			postProcess.endElement("", "diffreport", "diffreport");
-			postProcess.endDocument();
-		} catch (Throwable e) {
-			e.printStackTrace();
-			if (e.getCause() != null) {
-				e.getCause().printStackTrace();
-			}
-			if (e instanceof SAXException) {
-				((SAXException) e).getException().printStackTrace();
-			}
-		} finally {
-		}
+      System.out.print(".");
+      postProcess.endElement("", "diff", "diff");
+      postProcess.endElement("", "diffreport", "diffreport");
+      postProcess.endDocument();
+    } catch (Throwable e) {
+      e.printStackTrace();
+      if (e.getCause() != null) {
+        e.getCause().printStackTrace();
+      }
+      if (e instanceof SAXException) {
+        ((SAXException) e).getException().printStackTrace();
+      }
+    } finally {
+    }
 
-		return writer.toString();
-	}
+    return writer.toString();
+  }
 }
