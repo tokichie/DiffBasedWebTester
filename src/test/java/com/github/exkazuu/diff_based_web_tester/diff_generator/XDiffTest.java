@@ -4,9 +4,9 @@ import static org.junit.Assert.*;
 
 import java.nio.charset.StandardCharsets;
 
+import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
 import org.junit.Test;
 
-import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
 import com.google.common.io.Resources;
 
 public class XDiffTest {

@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.Collection;
 
+import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -14,7 +15,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import com.github.exkazuu.diff_based_web_tester.diff_generator.daisy_diff.DaisyDiffGenerator;
 import com.github.exkazuu.diff_based_web_tester.diff_generator.daisy_diff.DaisyDiffGeneratorWithTagMode;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff.XDiffGenerator;
+
 
 @RunWith(Parameterized.class)
 public class TestCase {

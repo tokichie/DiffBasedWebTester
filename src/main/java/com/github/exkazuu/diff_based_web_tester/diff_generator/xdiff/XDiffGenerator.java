@@ -3,8 +3,12 @@ package com.github.exkazuu.diff_based_web_tester.diff_generator.xdiff;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
+import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlDiffGenerator;
+import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlFormatter;
 import org.cyberneko.html.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -14,10 +18,6 @@ import org.w3c.dom.ProcessingInstruction;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.github.exkazuu.diff_based_web_tester.diff_generator.LogFiles;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlDiffGenerator;
-import com.github.exkazuu.diff_based_web_tester.diff_generator.HtmlFormatter;
-
 public class XDiffGenerator extends HtmlDiffGenerator {
 
   @Override
@@ -25,7 +25,7 @@ public class XDiffGenerator extends HtmlDiffGenerator {
     String diff = applyXdiff(input1, input2, lineSeparator);
     DOMParser parser = new DOMParser();
     try {
-      LogFiles.writeLogFile("_xdiff.xml", diff);
+      //tokichie.github.com.LogFiles.writeLogFile("_xdiff.xml", diff);
       parser.parse(new InputSource(new StringReader(diff)));
       Document document = parser.getDocument();
       InstructionNodeExtractor extractor = new InstructionNodeExtractor();
@@ -89,8 +89,8 @@ public class XDiffGenerator extends HtmlDiffGenerator {
             return type + ":[oldValue=" + fromData + ", newValue="
                 + elementToString(parent).replace(System.lineSeparator(), "") + "]";
           } else {
-            return type + " " + operationTarget + ":[oldValue=" + fromData + ", newValue="
-                + parent.getAttribute(operationTarget) + "]";
+            //return type + " " + operationTarget + ":[oldValue=" + fromData + ", newValue="
+            //    + parent.getAttribute(operationTarget) + "]";
           }
         default:
           return null;
@@ -105,14 +105,22 @@ public class XDiffGenerator extends HtmlDiffGenerator {
 
     private void buildNodeString(Node node, StringBuilder builder) {
       if (node.getNodeType() == Node.TEXT_NODE) {
-        builder.append(node.getNodeValue());
+        if (node.getNodeValue().equals(System.lineSeparator())) return;
+
+        if (node.getParentNode().getParentNode().getNodeName().equals("IDENTIFIER")) {
+            builder.append("__IDENT__　");
+        } else if (node.getParentNode().getParentNode().getNodeName().equals("STRINGLITERAL")) {
+            builder.append("__STRINGLITERAL__ ");
+        } else {
+            builder.append(node.getNodeValue()).append(" ");
+        }
       } else if (node.getNodeType() == Node.ELEMENT_NODE) {
-        builder.append("<").append(node.getNodeName()).append(">");
+        //builder.append("<").append(node.getNodeName()).append(">");
         NodeList children = node.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
           buildNodeString(children.item(i), builder);
         }
-        builder.append("</").append(node.getNodeName()).append(">");
+        //builder.append("</").append(node.getNodeName()).append(">");
       }
     }
 
